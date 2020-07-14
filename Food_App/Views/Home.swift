@@ -9,8 +9,12 @@ import SwiftUI
 import Firebase
 import FirebaseStorage
 import FirebaseFirestore
+import SDWebImageSwiftUI
 
 struct Home : View {
+    @ObservedObject var categories = getCategoriesData()
+   
+    
     var body : some View {
         VStack{
             Text("Welcome\(UserDefaults.standard.value(forKey: "UserName")as! String)")
@@ -22,8 +26,67 @@ struct Home : View {
                     NotificationCenter.default.post(name:NSNotification.Name("statusChanage"),object:nil)
             }, label: {
                 
-                Text("Sign Out").position(x: 100, y: 100)
+                Text("Sign Out")
+                
             })
+            if self.categories.datas.count != 0{
+                ScrollView(.vertical,showsIndicators: false){
+                VStack(spacing: 15){
+                    ForEach(self.categories.datas){ i in
+                       
+                        CellView(data:i)
+                      }
+                    }.padding()
+                    
+                }.background(Color("Color").edgesIgnoringSafeArea(.all))
+                
+            }
+            else{
+                Loader()
+            }
         }
+        
+    }
+    
+}
+
+struct CellView:View {
+    var data : category
+    var body : some View {
+        VStack{
+                                   
+                AnimatedImage(url: URL(string: data.pic)!).resizable().frame(height:270)
+                    HStack{
+                    VStack(alignment: .leading){
+                        Text( data.name).font(.title).fontWeight(.heavy)
+                        Text( data.price).font(.title).font(.body)
+                                       }
+                                       
+                                       Spacer()
+                                       
+                                       Button(action:{
+                                           
+                     }){
+                            Image(systemName: "arrow.right")
+                                .font(.body)
+                                .foregroundColor(.black)
+                                .padding(14)
+                                }.background(Color.yellow).clipShape(Circle())
+                    }.padding(.horizontal)
+                     .padding(.bottom,6)
+        }.background(Color.white)
+        .cornerRadius(20)
+    }
+}
+
+struct Loader :UIViewRepresentable {
+    
+    func makeUIView(context: UIViewRepresentableContext<Loader>) ->UIActivityIndicatorView  {
+        let indicator = UIActivityIndicatorView(style:.large)
+        indicator.startAnimating()
+        return indicator
+    }
+    func updateUIView(_ uiView:UIActivityIndicatorView, context: UIViewRepresentableContext<Loader>) {
+        
     }
 }
