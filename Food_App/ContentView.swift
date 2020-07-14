@@ -89,3 +89,5 @@ struct category : Identifiable {
       var price : String
       var pic : String
 }
+
+
